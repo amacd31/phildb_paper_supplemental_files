@@ -1,0 +1,11 @@
+.ipynb_checkpoints/
+*.pdf
+Anaconda3-2.4.1-Linux-x86_64.sh
+PhilDB-0.6.1.tar.gz
+authorized_keys
+influxdb-0.9.6.1-1.x86_64.rpm
+influxdb-2.11.0.tar.gz
+phildb_client.zip
+phildb_server.zip
+scidb-py-14.10.0.tar.gz
+

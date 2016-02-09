@@ -1,0 +1,6 @@
+0,b'530740\tscidbdata\n'
+1,b'695364\tscidbdata\n'
+2,b'955752\tscidbdata\n'
+3,b'1214672\tscidbdata\n'
+4,b'1473632\tscidbdata\n'
+5,b'1732648\tscidbdata\n'

@@ -1,0 +1,89 @@
+Supplementary files for the paper:
+    PhilDB: The time series database with built-in change logging
+
+This repository contains the files used to produce the results discussed in the paper listed above.
+Also included are the results that were produced for the paper along with the IPython notebook to produce the figures used in the paper.
+
+The process for using these scripts to reproduce the results are as follows:
+
+Download dependencies:
+
+    # https://downloads.paradigm4.com/QuickStart/14.3/
+    https://downloads.paradigm4.com/QuickStart/14.3/SciDB14.3-CentOS6-VirtualBox-4.2.10.ova
+
+    # https://www.continuum.io/downloads
+    wget https://3230d63b5fc54e62148e-c95ac804525aac4b6dba79b00b39d1d3.ssl.cf1.rackcdn.com/Anaconda3-2.4.1-Linux-x86_64.sh
+
+    # https://pypi.python.org/pypi/PhilDB
+    wget https://pypi.python.org/packages/source/P/PhilDB/PhilDB-0.6.1.tar.gz
+
+    # https://github.com/amacd31/phildb_server/releases/tag/v0.0.1
+    wget -O phildb_server.zip https://github.com/amacd31/phildb_server/archive/v0.0.1.zip
+
+    # https://github.com/amacd31/phildb_client/releases/tag/v0.0.2
+    wget -O phildb_client.zip https://github.com/amacd31/phildb_client/archive/v0.0.2.zip
+
+    # https://pypi.python.org/pypi/scidb-py
+    wget https://pypi.python.org/packages/source/s/scidb-py/scidb-py-14.10.0.tar.gz
+
+    # https://pypi.python.org/pypi/influxdb
+    wget https://pypi.python.org/packages/source/i/influxdb/influxdb-2.11.0.tar.gz
+
+    # https://influxdata.com/downloads/
+    wget https://s3.amazonaws.com/influxdb/influxdb-0.9.6.1-1.x86_64.rpm
+
+Download CSV data files (221) from: http://www.bom.gov.au/water/hrs/
+Example:
+
+    wget http://www.bom.gov.au/water/hrs/content/data/410730/410730_daily_ts.csv
+    wget http://www.bom.gov.au/water/hrs/content/data/410731/410731_daily_ts.csv
+    # etc.
+
+Convert to a simpler CSV format that SciDB can handle, for example using supplied convert.py command:
+
+    convert.py 410730_daily_ts.csv 410731_daily_ts.csv # etc.
+
+Set up authorized_key file to automate scp of files to virtual machine, e.g.:
+
+    cp ~/.ssh/id_rsa.pub authorized_keys
+
+Export SCIDB_HOST environment variable to hold the IP address of the virtual machine, e.g.:
+
+    export SCIDB_HOST=192.168.0.42
+
+Run the prep image shell script to copy files and install dependencies in the virtual machine :
+
+    sh prep_image.sh
+
+Entering the vm password 'paradigm4' twice to copy authorized_keys file to the scidb and root user accounts (assuming ssh-agent is running with the private key corresponding to the authorized_keys public portion).
+
+SSH into the configured virtual machine:
+
+    ssh scidb@${SCIDB_HOST}
+
+Run the automated tests for SciDB and PhilDB:
+
+    time python run_tests.py
+
+Run the tests for InfluxDB:
+
+    time python setup_influxdb.py *_scidb.csv
+    time python read_influxdb.py *_scidb.csv
+
+Exit the SSH session and copy the results from the virtual machine:
+
+    scp scidb@${SCIDB_HOST}:*.txt results_dir/a
+
+Repeat the entire process for multiple runs to use in the IPython notebook or edit the notebook to only use one run.
+
+At the `du' analysis step of the notebook (step 11) execute the unix commands that get printed in the results directories to get cleaned versions of the results.
+Then manually edit the cleaned_phildb_disk_usage_results.txt file to have 0 on the first line rather than 0,0.
+
+Use Jupyter to run the notebook analysis/results_analysis_all.ipynb:
+
+    jupyter notebook
+
+Edit the results_dir variable to reference the copied results and edit the sub directory run list ('A', 'B', 'C', 'D') to represent the number of runs performed.
+Then run all cells in the notebook to produce the figures and explore the results.
+
+Any questions can be directed to Andrew MacDonald at andrew@maccas.net
